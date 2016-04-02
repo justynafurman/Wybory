@@ -1,0 +1,147 @@
+---
+title: "Wybory"
+author: "Katarzyna Fąk, Justyna Jankowiak"
+output: slidy_presentation
+---
+
+```{r setOptions, warning = FALSE, message=FALSE, echo=FALSE}
+#ustawiamy ścieżkę na folder Wybory
+sciezka.glowna <- "D:/GoogleDrive/Studia/SemestrVIII/R-i-Big-Data/Wybory" 
+library(dplyr)
+library(googleVis)
+library(stringi)
+library(knitr)
+podsumowanie <- read.csv(file.path(sciezka.glowna, "dane/podsumowanie.txt"))
+artykuly <- read.csv(file.path(sciezka.glowna, "dane/artykuly.txt"))
+#opcje, by wyświetlały się wykresy z googleVis
+op <- options(gvis.plot.tag='chart')
+```
+
+# Podstawowe dane
+
+Ilość czasu poświęconego na projekt: $\infty$
+
+```{r}
+pliki <- list.files(file.path(sciezka.glowna, "dane"), recursive = TRUE)
+pliki.info <- file.info(file.path(sciezka.glowna, "dane", pliki))
+size.all <- sum(pliki.info$size)/1024^2
+```
+
+Wielkość zebranych danych (bez twittera i Facebooka): `r size.all` MB 
+
+twitter: 50 MB 
+
+Facebook: 392 MB
+
+```{r}
+data.min <- artykuly %>%
+   summarise(min.data = min(as.Date(data)))
+data.max <- artykuly %>%
+   summarise(min.data = max(as.Date(data)))
+```
+
+Okres zbierania danych: [`r data.min`, `r data.max`]
+
+# Podstawowe dane
+
+```{r}
+ile.art <- nrow(artykuly)
+```
+
+Ilość różnych artykułów: `r ile.art`
+
+Ilość różnych artykułów dla poszczególnych kandydatów:
+```{r}
+tabela <- artykuly %>% group_by(kandydat) %>%
+      summarise(liczba.art = n()) %>% arrange(desc(liczba.art))
+```
+
+```{r, echo=FALSE, results='asis'}
+cat("<center>")
+plot(gvisColumnChart(as.data.frame(tabela)))
+cat("</center>")
+```
+
+# Kalendarze widoczności
+
+```{r, results='asis', tidy=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+kandydaci <- levels(podsumowanie$kandydat)
+kandydaciDuza <- stri_trans_totitle(kandydaci)
+do.kalendarza <- list()
+kalendarz <- list()
+maxi <- numeric(length(kandydaci))
+for (k in seq_along(kandydaci)) {
+   
+   do.kalendarza[[k]] <- podsumowanie %>%
+      filter(kandydat == kandydaci[k]) %>%
+      group_by(data = as.Date(data)) %>%
+      summarize(liczba = n()) 
+   
+   maxi[k] <- max(do.kalendarza[[k]][,2])
+}
+
+ile.max <- max(maxi)
+
+for(k in seq_along(kandydaci)){
+   #jakaś data, która nie będzie widoczna w kalendarzu - chodzi o to by unormować kolorowanie
+   #w przeciwnym wypadku byłoby, że jeśli dla Brauna max to 9, a dla Komora max to 120 to i tak byłyby w tym samym kolorze
+   do.kalendarza[[k]] <- rbind(do.kalendarza[[k]], data.frame(data=as.Date("2015-07-15", "%Y-%m-%d"), liczba=ile.max))
+   
+   kalendarz[[k]] <- gvisCalendar(do.kalendarza[[k]],
+                                  options = list(
+                                     title = kandydaciDuza[k],
+                                     calendar = "{yearLabel:{fontSize:20, color:'#444444'}}",
+                                     height = 200, width=403
+                                     )
+                               )
+}
+   
+```
+
+
+```{r two-column, results='asis', echo=FALSE, out.extra=''}
+cat("<center><table class='container'><tr>")
+cat("<td>")
+plot(kalendarz[[4]])
+cat("</td>")
+cat("<td>")
+plot(kalendarz[[2]])
+cat("</td>")
+cat("</tr></table></center>")
+
+cat("<center><table class='container'><tr>")
+cat("<td>")
+plot(kalendarz[[7]])
+cat("</td>")
+cat("<td>")
+plot(kalendarz[[5]])
+cat("</td>")
+cat("</tr></table></center>")
+
+cat("<center><table class='container'><tr>")
+cat("<td>")
+plot(kalendarz[[8]])
+cat("</td>")
+cat("<td>")
+plot(kalendarz[[1]])
+cat("</td>")
+cat("</tr></table></center>")
+
+cat("<center><table class='container'><tr>")
+cat("<td>")
+plot(kalendarz[[3]])
+cat("</td>")
+cat("<td>")
+plot(kalendarz[[9]])
+cat("</td>")
+cat("</tr></table><center>")
+
+cat("</center><table class='container'><tr>")
+cat("<td>")
+plot(kalendarz[[6]])
+cat("</td>")
+cat("<td>")
+plot(kalendarz[[10]])
+cat("</td>")
+cat("</tr></table></center>")
+```
