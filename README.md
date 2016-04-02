@@ -8,5 +8,5 @@ Projekt został wykonany w pakiecie `R`.
 
 # Jak otworzyć prezentację?
 
-Projekt składał się z trzech części. W pierwszej należało przygotować narzędzie do automatycznego pobierania danych z internetu. W drugiej części opracowane zostały wskaźniki-miary, które pozwalają na ocenę widoczności danego kandydata w sieci. Krótkie podsumowanie z tej części projektu znajduje się [tu](https://github.com/tyskaj/Wybory/blob/master/prezentacja2/prezentacja2.pdf).
+Projekt składał się z trzech części. W pierwszej należało przygotować narzędzie do automatycznego pobierania danych z internetu. W drugiej części opracowane zostały wskaźniki-miary, które pozwalają na ocenę widoczności danego kandydata w sieci. Krótkie podsumowanie z tej części projektu znajduje się [tu](https://github.com/tyskaj/Wybory/blob/master/prezentacja/czesc2/prezentacja2/prezentacja2.pdf).
 Trzecia część to ostateczna aplikacja, która pozwala na analizę wskaźników w czasie. Zawiera szereg funkcjonalności pozwalających na porównywanie widoczności kandydatów w różnych portalach, w różnym czasie itd. Aplikacja została wykonana w `Shiny` i dostępna jest [tu](https://jankowiakj.shinyapps.io/Fak_Jankowiak/).
